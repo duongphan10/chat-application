@@ -56,12 +56,13 @@ public class UserController {
                                         @Valid @ModelAttribute UserUpdateDto userUpdateDto) {
         return VsResponseUtil.success(userService.updateInfo(user.getId(), userUpdateDto));
     }
+
     @Tag(name = "user-controller")
     @Operation(summary = "API change password")
     @PostMapping(UrlConstant.User.CHANGE_PASSWORD)
     public ResponseEntity<?> changePassword(@Parameter(name = "principal", hidden = true)
-                                        @CurrentUser UserPrincipal user,
-                                        @Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
+                                            @CurrentUser UserPrincipal user,
+                                            @Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
         return VsResponseUtil.success(userService.changePassword(user.getId(), changePasswordRequestDto));
     }
 
@@ -69,8 +70,28 @@ public class UserController {
     @Operation(summary = "API get all user conversation")
     @GetMapping(value = UrlConstant.User.GET_ALL_USER_CONVERSATION)
     public ResponseEntity<?> getAllUserConversation(@Parameter(name = "user", hidden = true)
-                                          @CurrentUser UserPrincipal user,
-                                          @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
+                                                    @CurrentUser UserPrincipal user,
+                                                    @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
         return VsResponseUtil.success(userService.getAllUserConversation(paginationFullRequestDto, user.getId()));
+    }
+
+    @Tag(name = "user-controller")
+    @Operation(summary = "API search friend")
+    @GetMapping(value = UrlConstant.User.SEARCH_FRIEND)
+    public ResponseEntity<?> searchFriend(@Parameter(name = "user", hidden = true)
+                                          @CurrentUser UserPrincipal user,
+                                          @RequestParam String search,
+                                          @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
+        return VsResponseUtil.success(userService.searchFriend(paginationFullRequestDto, user.getId(), search));
+    }
+
+    @Tag(name = "user-controller")
+    @Operation(summary = "API search other friend")
+    @GetMapping(value = UrlConstant.User.SEARCH_OTHER_USER)
+    public ResponseEntity<?> searchOtherFriend(@Parameter(name = "user", hidden = true)
+                                          @CurrentUser UserPrincipal user,
+                                          @RequestParam String search,
+                                          @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
+        return VsResponseUtil.success(userService.searchOtherFriend(paginationFullRequestDto, user.getId(), search));
     }
 }

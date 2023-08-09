@@ -21,4 +21,8 @@ public interface UserService {
     CommonResponseDto changePassword(String userId, ChangePasswordRequestDto passwordRequestDto);
 
     PaginationResponseDto<UserDto> getAllUserConversation(PaginationFullRequestDto paginationFullRequestDto, String meId);
+
+    PaginationResponseDto<UserDto> searchFriend(PaginationFullRequestDto paginationFullRequestDto, String meId, String searchText);
+
+    PaginationResponseDto<UserDto> searchOtherFriend(PaginationFullRequestDto paginationFullRequestDto, String meId, String searchText);
 }

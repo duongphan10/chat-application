@@ -105,9 +105,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PaginationResponseDto<UserDto> getAllUserConversation(PaginationFullRequestDto paginationFullRequestDto, String meId) {
+        userRepository.findById(meId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{meId}));
+
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto);
 
         Page<User> userPage = userRepository.getAllUserConversation(meId, pageable);
+
+        PagingMeta meta = PaginationUtil.buildPagingMeta(paginationFullRequestDto, userPage);
+
+        return new PaginationResponseDto<>(meta, userMapper.toUserDtos(userPage.getContent()));
+    }
+
+    @Override
+    public PaginationResponseDto<UserDto> searchFriend(PaginationFullRequestDto paginationFullRequestDto, String meId, String searchText) {
+        userRepository.findById(meId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{meId}));
+
+        Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto);
+
+        Page<User> userPage = userRepository.searchFriend(meId,searchText, pageable);
+
+        PagingMeta meta = PaginationUtil.buildPagingMeta(paginationFullRequestDto, userPage);
+
+        return new PaginationResponseDto<>(meta, userMapper.toUserDtos(userPage.getContent()));
+    }
+
+    @Override
+    public PaginationResponseDto<UserDto> searchOtherFriend(PaginationFullRequestDto paginationFullRequestDto, String meId, String searchText) {
+        userRepository.findById(meId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{meId}));
+
+        Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto);
+
+        Page<User> userPage = userRepository.searchOtherFriend(meId,searchText, pageable);
 
         PagingMeta meta = PaginationUtil.buildPagingMeta(paginationFullRequestDto, userPage);
 
