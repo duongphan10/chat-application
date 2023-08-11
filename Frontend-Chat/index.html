@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+
+    <title>Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+</head>
+
+<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="container app">
+        <div class="row app-one">
+            <div class="col-sm-4 side">
+
+                <!-- Show User -->
+                <div class="side-one">
+
+                    <!-- Head -->
+                    <div class="row heading">
+                        <!-- My Avatar -->
+                        <div class="col-sm-3 col-xs-3 heading-avatar">
+                            <div class="heading-avatar-icon">
+                                <img id="avatarImage" src="../Frontend-Chat/assets/image/avatar.jpg">
+                                <span class="online-icon"></span>
+                            </div>
+                        </div>
+
+                        <!-- My Name -->
+                        <div class="col-sm-8 col-xs-7 heading-name">
+                            <a class="heading-name-meta" id="myname"></a>
+                            <!-- <span class="heading-online">Online</span> -->
+                            <!-- Phan Van Duong Phan Van Duong -->
+                        </div>
+
+
+                        <!-- Cài đặt -->
+                        <div class="col-sm-1 col-xs-1 heading-dot pull-right" title="Cài đặt">
+                            <i class="fa fa-bars fa-1x"></i>
+                        </div>
+
+                        <!-- New conversation button-->
+                        <div class="col-sm-2 col-xs-2 heading-compose  pull-right" title="Thêm bạn bè">
+                            <i class="fa fa-user-plus fa-1x pull-right" aria-hidden="true"></i>
+                        </div>
+
+
+                    </div>
+
+                    <!-- Search -->
+                    <div class="row searchBox">
+                        <div class="col-sm-12 searchBox-inner">
+                            <input id="searchText" type="text" class="form-control" name="searchText"
+                                placeholder="Tìm kiếm bạn bè">
+                            <!-- <i class="fa fa-search fa-2x ml-2"></i> -->
+                            <button type="button" class="search-button">
+                                <i class="fa fa-search fa-1x" aria-hidden="true"></i>
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <!-- Danh sách cuộc trò chuyện -->
+                    <div class="row sideBar" id="userList">
+                        <!-- <div class="row sideBar-body">
+                            <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                                <div class="avatar-icon">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                                </div>
+                            </div>
+                            <div class="col-sm-9 col-xs-9 sideBar-main">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-8 sideBar-name">
+                                        <span class="name-meta">
+                                            John Doe
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+                                        <span class="time-meta pull-right">18:18
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+
+                <!-- Add Friend -->
+                <div class="side-two">
+                    <div class="row newMessage-heading">
+                        <div class="row newMessage-main">
+                            <div class="col-sm-2 col-xs-2 newMessage-back">
+                                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-sm-10 col-xs-10 newMessage-title">
+                                Thêm cuộc trò chuyện
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row composeBox">
+                        <div class="col-sm-12 composeBox-inner">
+
+                            <input type="text" class="form-control" placeholder="Tìm bạn mới">
+                            <!-- <i class="fa fa-search fa-2x ml-2"></i> -->
+                            <button type="button" class="search-button">
+                                <i class="fa fa-search fa-1x" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row compose-sideBar">
+
+                        <!-- <div class="row sideBar-body">
+                            <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                                <div class="avatar-icon">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar5.png">
+                                </div>
+                            </div>
+                            <div class="col-sm-9 col-xs-9 sideBar-main">
+                                <div class="row">
+                                    <div class="col-sm-8 col-xs-8 sideBar-name">
+                                        <span class="name-meta">John Doe
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+                                        <span class="time-meta pull-right">18:18
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                    </div>
+                </div>
+
+                <!-- Cài đặt -->
+                <div class="side-three">
+
+                    <!-- Tiêu đề setting -->
+
+                    <div class="row setting-heading">
+                        <div class="row setting-main">
+                            <div class="col-sm-2 col-xs-2 setting-back">
+                                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-sm-10 col-xs-10 setting-title">
+                                Tôi
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- List item settings -->
+                    <div class="row setting-sideBar">
+
+                        <!-- Avatar and Name in Setting -->
+                        <div class="row menu-sideBar-heading">
+
+                            <div class="col-sm-3 col-xs-3 menu-heading-avatar">
+                                <div class="menu-heading-img">
+                                    <img src="../Frontend-Chat/assets/image/avatar.jpg">
+                                </div>
+                            </div>
+                            <div class="col-sm-9 col-xs-9 menu-heading-main">
+                                <div class="col-sm-8 col-xs-8 menu-heading-name">
+                                    <span class="menu-avatar-name">
+                                        <!-- Phan Văn Dương -->
+                                    </span> 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row menu-sideBar-body">
+                            <div class="col-sm-3 col-xs-3 menu-sideBar-icon">
+                                <i class="fa fa-user fa-1x" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-sm-9 col-xs-9 menu-sideBar-main">
+                                <div class="col-sm-8 col-xs-8 menu-sideBar-name">
+                                    <span class="menu-name">
+                                        <a>Thông tin cá nhân</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row menu-sideBar-body">
+                            <div class="col-sm-3 col-xs-3 menu-sideBar-icon">
+                                <i class="fa fa-pencil-square-o fa-1x" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-sm-9 col-xs-9 menu-sideBar-main">
+                                <div class="col-sm-8 col-xs-8 menu-sideBar-name">
+                                    <span class="menu-name">
+                                        <a>Cập nhật thông tin</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row menu-sideBar-body" id="menu-logout">
+                            <div class="col-sm-3 col-xs-3 menu-sideBar-icon">
+                                <i class="fa fa-sign-out fa-1x" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-sm-9 col-xs-9 menu-sideBar-main">
+                                <div class="col-sm-8 col-xs-8 menu-sideBar-name">
+                                    <span class="menu-name">
+                                        <a>Đăng xuất</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Message -->
+            <div class="col-sm-8 conversation" id="conversation-container">
+
+                <!-- Header Message -->
+                <div class="row heading" id="header-conversation">
+                    <!-- <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+                        <div class="heading-avatar-icon">
+                            <img src="">
+                        </div>
+                    </div>
+                    <div class="col-sm-8 col-xs-7 heading-name">
+                        <a class="heading-name-meta">
+                            John Doe
+                        </a>
+                        <span class="heading-online">Online</span>
+                    </div>
+                    <div class="col-sm-1 col-xs-1  heading-dot pull-right">
+                        <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+                    </div> -->
+                </div>
+
+
+                <!-- Body Message-->
+                <div class="row message" id="conversation">
+                    <!-- <div class="row message-previous">
+                        <div class="col-sm-12 previous">
+                            <a onclick="previous(this)" id="ankitjain28" name="20">
+                                Show Previous Message!
+                            </a>
+                        </div>
+                    </div> -->
+
+
+                    <!-- <div class="row message-body">
+                        <div class="col-sm-12 message-main-receiver">
+                            <div class="receiver">
+                                <div class="message-text">
+                                    Hi, what are you doing?!
+                                </div>
+                                <span class="message-time pull-right">
+                                    Sun
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row message-body">
+                        <div class="col-sm-12 message-main-sender">
+                            <div class="sender">
+                                <div class="message-text">
+                                    I am doing nothing man!
+                                </div>
+                                <span class="message-time pull-right">
+                                    Sun
+                                </span>
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+
+                <!-- Send Message -->
+                <!-- <div class="row reply" id="reply">
+                    <div class="col-sm-1 col-xs-1 reply-emojis">
+                        <i class="fa fa-smile-o fa-2x"></i>
+                    </div>
+                    <div class="col-sm-9 col-xs-9 reply-main">
+                        <textarea class="form-control" wrap="soft" id="comment"></textarea>
+                    </div>
+                    <div class="col-sm-1 col-xs-1 reply-recording">
+                        <i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
+                    </div>
+                    <div class="col-sm-1 col-xs-1 reply-send">
+                        <i class="fa fa-send fa-2x" aria-hidden="true"></i>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    <script src="../Frontend-Chat/js/index.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            // New Friend
+            $(".heading-compose").click(function () {
+                $(".side-two").css({
+                    "left": "0"
+                });
+            });
+
+            $(".newMessage-back").click(function () {
+                $(".side-two").css({
+                    "left": "-100%"
+                });
+            });
+
+            // setting
+            $(".heading-dot").click(function () {
+                $(".side-three").css({
+                    "left": "0"
+                });
+            });
+
+            $(".setting-back").click(function () {
+                $(".side-three").css({
+                    "left": "-200%"
+                });
+            });
+
+        })
+    </script>
+
+</body>
+
+</html>
