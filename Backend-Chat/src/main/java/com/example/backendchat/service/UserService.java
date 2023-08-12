@@ -25,4 +25,6 @@ public interface UserService {
     PaginationResponseDto<UserDto> searchFriend(PaginationFullRequestDto paginationFullRequestDto, String meId, String searchText);
 
     PaginationResponseDto<UserDto> searchOtherFriend(PaginationFullRequestDto paginationFullRequestDto, String meId, String searchText);
+
+    UserDto getUserByUsername(String username);
 }

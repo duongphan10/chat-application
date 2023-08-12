@@ -28,7 +28,7 @@ public class UrlConstant {
         public static final String GET_ALL_USER_CONVERSATION = PRE_FIX + "/all/conversation";
         public static final String SEARCH_FRIEND = PRE_FIX + "/search/friend";
         public static final String SEARCH_OTHER_USER = PRE_FIX + "/search/other";
-
+        public static final String GET_USER_BY_USERNAME = PRE_FIX + "/get";
         private User() {
         }
     }

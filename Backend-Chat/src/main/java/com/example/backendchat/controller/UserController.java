@@ -88,10 +88,17 @@ public class UserController {
     @Tag(name = "user-controller")
     @Operation(summary = "API search other friend")
     @GetMapping(value = UrlConstant.User.SEARCH_OTHER_USER)
-    public ResponseEntity<?> searchOtherFriend(@Parameter(name = "user", hidden = true)
+    public ResponseEntity<?> searchOtherUser(@Parameter(name = "user", hidden = true)
                                           @CurrentUser UserPrincipal user,
                                           @RequestParam String search,
                                           @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
         return VsResponseUtil.success(userService.searchOtherFriend(paginationFullRequestDto, user.getId(), search));
+    }
+
+    @Tag(name = "user-controller")
+    @Operation(summary = "API search user by username or full name")
+    @GetMapping(value = UrlConstant.User.GET_USER_BY_USERNAME)
+    public ResponseEntity<?> getUserByUsername(@Parameter String username) {
+        return VsResponseUtil.success(userService.getUserByUsername( username));
     }
 }
