@@ -23,7 +23,10 @@ public interface UserMapper {
     UserDto toUserDto(User user);
 
     @Mappings({
-            @Mapping(target = "avatar", source = "avatar", ignore = true)
+            @Mapping(target = "user.avatar", source = "avatar", ignore = true),
+            @Mapping(target = "user.fullName", source = "fullName"),
+            @Mapping(target = "user.username", ignore = true),
+            @Mapping(target = "user.email", ignore = true),
     })
     void updateUser(@MappingTarget User user, UserUpdateDto userUpdateDto);
 
