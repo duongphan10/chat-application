@@ -13,10 +13,9 @@ const apiUrls = {
 let avatarChanged = false;
 // Lấy accessToken từ localStorage
 const accessToken = localStorage.getItem("accessToken");
-
+var defautAvatarSrc;
 document.addEventListener("DOMContentLoaded", function () {
-    getData();
-
+    getData();    
     const avatarThumbnail = document.getElementById("old-avatar");
     const fullImageOverlay = document.getElementById("full-image-overlay");
     const fullAvatar = document.getElementById("full-avatar");
@@ -36,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
             avatarChanged = true; // Đánh dấu hình ảnh đã thay đổi
         }
         else {
-            // avatarThumbnail.src = 
+            avatarThumbnail.src = defautAvatarSrc;
             avatarChanged = false;
         }
     });
@@ -46,7 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
         fullImageOverlay.style.display = "none";
     });
 
-    document.getElementById('btn-update').addEventListener('click', async function () {
+    const btnUpdate = document.getElementById('btn-update');
+    btnUpdate.addEventListener('click', async function () {
         var result = window.confirm("Bạn có chắc muốn cập nhật thông tin?");
         if (result) {
             try {
@@ -62,7 +62,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (avatarChanged) {
                     formData.append('avatar', document.querySelector('.avatar').files[0]);
                 }
-                
+
+                // Tạo Spinner và thiết lập tùy chọn
+                const spinnerOptions = {
+                    lines: 12,
+                    length: 10,
+                    width: 6,
+                    radius: 12,
+                    color: '#000',
+                    speed: 1,
+                    trail: 100,
+                    shadow: false,
+                };
+                const spinner = new Spinner(spinnerOptions);
+
+                // Hiển thị spinner giữa màn hình
+                const spinnerContainer = document.createElement('div');
+                spinnerContainer.className = 'spinner-container';
+                document.body.appendChild(spinnerContainer);
+                spinner.spin(spinnerContainer);
+
+
                 const response = await fetch(apiUrls.User.UPDATE_USER, {
                     method: "PATCH",
                     headers: {
@@ -70,9 +90,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: formData,
                 });
+                
+                spinner.stop();
+
                 toastr.options = {
+                    newestOnTop: true,           // Hiển thị thông báo mới nhất ở trên cùng
+                    preventDuplicates: false,
                     positionClass: 'toast-top-center',
-                    toastClass: 'toastr-custom-width',                    
+                    toastClass: 'toastr-custom-width',  
+                    showEasing: 'swing',         // Hiệu ứng hiển thị
+                    hideEasing: 'linear',        // Hiệu ứng ẩn
+                    showMethod: 'fadeIn',        // Phương thức hiển thị
+                    hideMethod: 'fadeOut',        // Phương thức ẩn      
+                    timeOut: '3000',             // Thời gian tự động ẩn thông báo (milliseconds)            
                 };
                 if (response.ok) {                    
                     toastr.success('Cập nhật thành công!');
@@ -80,19 +110,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     setTimeout(() => {
                         window.location.href = "../index.html"; // Chuyển trang sau khi thông báo hiện trong 2 giây
                     }, 2000);
-                } else {     
+                } else {                     
                     const errorResponse = await response.json(); // Parse JSON response
                     const errorMessage = errorResponse.message; // Access the "message" field            
-
-                    // Kiểm tra xem có các trường nào trong đối tượng "message"
-                    const errorFields = Object.keys(errorMessage);
-
                     let errorMessageString = "";
-                    errorFields.forEach(field => {
-                        errorMessageString = `${errorMessage[field]}`;
-                    });
-                
-                    toastr.error(errorMessage, 'Cập nhật thất bại');
+                    if (typeof errorMessage === 'string') {
+                        errorMessageString = errorMessage;
+                    }
+                    else {
+                        // Kiểm tra xem có các trường nào trong đối tượng "message"
+                        const errorFields = Object.keys(errorMessage);
+                        errorFields.forEach(field => {
+                            errorMessageString = `${errorMessage[field]}`;
+                        });
+                    }
+                    toastr.error(errorMessageString, 'Cập nhật thất bại');
                 }
             } catch (error) {
                 alert("Lỗi! Vui lòng thử lại sau");
@@ -120,9 +152,9 @@ async function getData() {
 
 
         if (response.ok) {
-            const data = await response.json();
-            if (data.data.avatar)
-                document.querySelector('#old-avatar').src = data.data.avatar;
+            const data = await response.json();            
+            document.querySelector('#old-avatar').src = data.data.avatar ? data.data.avatar : "../assets/image/avatar.jpg";
+            defautAvatarSrc = document.querySelector('#old-avatar').src;
             document.querySelector('.fullname').value = data.data.fullName;
             document.querySelector('.username').value = data.data.username;
             document.querySelector('.email').value = data.data.email;

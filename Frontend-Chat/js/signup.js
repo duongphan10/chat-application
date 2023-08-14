@@ -28,9 +28,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function signup(fullname, username, password, confirmPassword, email) {
+    if (password == confirmPassword) {
+        try {
+            toastr.options = {
+                newestOnTop: true,           // Hiển thị thông báo mới nhất ở trên cùng
+                preventDuplicates: false,
+                positionClass: 'toast-top-center',
+                toastClass: 'toastr-custom-width',
+                showEasing: 'swing',         // Hiệu ứng hiển thị
+                hideEasing: 'linear',        // Hiệu ứng ẩn
+                showMethod: 'fadeIn',        // Phương thức hiển thị
+                hideMethod: 'fadeOut',        // Phương thức ẩn      
+                timeOut: '3000',             // Thời gian tự động ẩn thông báo (milliseconds)            
+            };
 
-    try {
-        if (password == confirmPassword) {
             // Tạo đối tượng chứa dữ liệu của bạn
             const data = {
                 fullName: fullname,
@@ -48,42 +59,44 @@ async function signup(fullname, username, password, confirmPassword, email) {
             });
 
             if (response.ok) {
-                localStorage.setItem("message-signup", "Đăng ký thành công!");
-                window.location.href = "../pages/login.html";
+                toastr.success('Đăng ký thành công!');
+
+                setTimeout(() => {
+                    window.location.href = "../pages/login.html"; // Chuyển trang sau khi thông báo hiện trong 2 giây
+                }, 2000);
             }
             else {
-                const errorContainer = document.getElementById("error-message");
                 const errorResponse = await response.json(); // Parse JSON response
                 const errorMessage = errorResponse.message; // Access the "message" field            
-
-                // Kiểm tra xem có các trường nào trong đối tượng "message"
-                const errorFields = Object.keys(errorMessage);
-               
                 let errorMessageString = "";
-                errorFields.forEach(field => {
-                    errorMessageString = `${errorMessage[field]}`;
-                });
-                errorContainer.textContent = errorMessageString;
-                
+                if (typeof errorMessage === 'string') {
+                    errorMessageString = errorMessage;
+                }
+                else {
+                    // Kiểm tra xem có các trường nào trong đối tượng "message"
+                    const errorFields = Object.keys(errorMessage);
+                    errorFields.forEach(field => {
+                        errorMessageString = `${errorMessage[field]}`;
+                    });
+                }
+                toastr.error(errorMessageString, 'Thất bại!');
 
             }
-        } else {
-            const errorContainer = document.getElementById("error-message");
-            const errorMessage = "Vui lòng nhập mật khẩu trùng nhau!";
-            errorContainer.textContent = errorMessage;
+        } catch (error) {
+            // Handle any network or server errors
+            alert("Error! Please try again later");
         }
-
-        // Giữ nguyên giá trị các trường
-        const signupForm = document.getElementById("signup-form");
-        signupForm.elements["fullname"].value = fullname;
-        signupForm.elements["username"].value = username;
-        signupForm.elements["password"].value = password;
-        signupForm.elements["confirm-password"].value = confirmPassword;
-        signupForm.elements["email"].value = email;
-        
-    } catch (error) {
-        // Handle any network or server errors
-        alert("Error! Please try again later");
+    } else {
+        const errorMessage = "Vui lòng nhập mật khẩu trùng nhau!";
+        toastr.error(errorMessage, 'Lỗi!');
     }
+
+    // Giữ nguyên giá trị các trường
+    const signupForm = document.getElementById("signup-form");
+    signupForm.elements["fullname"].value = fullname;
+    signupForm.elements["username"].value = username;
+    signupForm.elements["password"].value = password;
+    signupForm.elements["confirm-password"].value = confirmPassword;
+    signupForm.elements["email"].value = email;
 
 }

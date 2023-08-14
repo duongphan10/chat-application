@@ -150,3 +150,24 @@ body {
     background-color: #e74c3c;
     color: white;
 }
+
+
+/* CSS cho phần tử nền */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Màu đen với độ mờ 50% */
+    z-index: 9999; /* Đảm bảo phần tử nền hiển thị phía trên mọi nội dung khác */
+}
+
+/* CSS cho spinner container */
+.spinner-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* Đảm bảo spinner container hiển thị phía trên phần tử nền */
+}

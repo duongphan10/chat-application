@@ -34,12 +34,12 @@ var myId;
 var myUserName;
 var currentPageMessage = 0;
 var selectedUserId = null;
+var tryError = false;
 
 getCurrentUser(accessToken);
 loadConversations(accessToken);
 
 document.addEventListener('DOMContentLoaded', function () {    
-
     socket.on('server_send_message', (message) => {
         if (myId == message.senderId || (myId == message.receiverId && selectedUserId == message.senderId)) {
             currentPageMessage = 1;
@@ -120,6 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = "../Frontend-Chat/pages/update.html";
     });
 
+    // Bắt sự kiện đổi mật khẩu
+    document.getElementById('menu-change-password').addEventListener('click', function () {
+        window.location.href = "../Frontend-Chat/pages/changepassword.html";
+    });
+
     // Bắt sự kiện logout
     document.getElementById('menu-logout').addEventListener('click', function () {
         var result = window.confirm("Bạn có chắc muốn đăng xuất?");
@@ -185,7 +190,10 @@ async function getCurrentUser(accessToken) {
             alert("Lỗi trong quá trình xử lý: " + response.status);
     } catch (error) {
         // Handle any network or server errors
-        alert("Lỗi! Vui lòng thử lại sau");
+        if (!tryError) {
+            alert("Lỗi! Vui lòng thử lại sau");
+            tryError = true;
+        }
     }
 }
 
@@ -233,7 +241,10 @@ async function headerConversation(accessToken) {
             alert("Lỗi trong quá trình xử lý: " + response.status);
     } catch (error) {
         // Handle any network or server errors
-        alert("Lỗi! Vui lòng thử lại sau");
+        if (!tryError) {
+            alert("Lỗi! Vui lòng thử lại sau");
+            tryError = true;
+        }
     }
 }
 
@@ -334,7 +345,10 @@ async function bodyConversation(accessToken, type) {
             alert("Lỗi trong quá trình xử lý: " + response.status);
     } catch (error) {
         // Handle any network or server errors
-        alert("Lỗi! Vui lòng thử lại sau");
+        if (!tryError) {
+            alert("Lỗi! Vui lòng thử lại sau");
+            tryError = true;
+        }
     }
 }
 
@@ -404,6 +418,7 @@ async function bodySearchUser(accessToken, type) {
     } catch (error) {
         // Handle any network or server errors
         alert("Lỗi! Vui lòng thử lại sau");
+        
     }
 }
 
