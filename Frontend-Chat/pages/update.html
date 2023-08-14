@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset=" UTF-8">
+    <title>Update</title>
+    <link rel="stylesheet" href="../css/update.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+
+</head>
+
+<body>
+
+    <div id="user-info">
+        <h2>Cập nhật thông tin</h2>
+
+        <div id="image-overlay">
+            <img src="../assets/image/avatar.jpg" alt="Avatar" id="old-avatar">
+        </div>
+
+        <div id="full-image-overlay">
+            <img src="" alt="Full Avatar" id="full-avatar">
+            <span id="close-button">Đóng</span>
+        </div>
+
+        <div class="info-avatar">
+            <label class="info-lab">Avatar:</label>
+            <input type="file" class="avatar" >
+        </div>
+        <div class="info-fullname">
+            <label class="info-lab">Họ và tên:</label>
+            <input type="text" class="fullname">
+            <!-- <span class="fullname"></span> -->
+        </div>
+        <div class="info-username">
+            <label class="info-lab">Username:</label>
+            <input type="text" class="username">
+            <!-- <span class="username"></span> -->
+        </div>
+        <div class="info-email">
+            <label class="info-lab">Email:</label>
+            <input type="email" class="email">
+            <!-- <span class="email"></span> -->
+        </div>
+        <div class="info-btn">
+            <button type="button" id="btn-update">Cập nhật</button>
+            <button type="button" id="btn-back">Trở về</button>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="../js/update.js"></script>
+</body>
+
+</html>

@@ -107,6 +107,7 @@ body {
     border-radius: 50%;
     height: 40px;
     width: 40px;
+    object-fit: cover;
 }
 
 .online-icon {
@@ -368,6 +369,7 @@ body {
     border-radius: 50%;
     height: 49px;
     width: 49px;
+    /* object-fit: cover; */
 }
 
 .sideBar-main {

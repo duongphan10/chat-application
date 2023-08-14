@@ -14,6 +14,7 @@ const apiUrls = {
         UPDATE_USER: API_BASE_URL + "/user",
         CHANGE_PASSWORD: API_BASE_URL + "/user/change-password",
         GET_BY_ID: API_BASE_URL + "/user",
+        GET_BY_USERNAME: API_BASE_URL + "/user/get",
         GET_ALL_USER_CONVERSATION: API_BASE_URL + "/user/all/conversation",
         SEARCH_FRIEND: API_BASE_URL + "/user/search/friend",
         SEARCH_OTHER_USER: API_BASE_URL + "/user/search/other",
@@ -28,11 +29,15 @@ const apiUrls = {
 const accessToken = localStorage.getItem("accessToken");
 checkToken(accessToken);
 const socket = io(URL_SOCKET + `?accessToken=${accessToken}`);
+
 var myId;
+var myUserName;
 var currentPageMessage = 0;
 var selectedUserId = null;
+
 getCurrentUser(accessToken);
 loadConversations(accessToken);
+
 document.addEventListener('DOMContentLoaded', function () {    
 
     socket.on('server_send_message', (message) => {
@@ -103,6 +108,16 @@ document.addEventListener('DOMContentLoaded', function () {
     searchButtonComposeBox.addEventListener("click", function () {
         if (searchInputComposeBox.value.trim() !== '')
             bodySearchUser(accessToken, 1);
+    });    
+
+    // Bắt sự kiện xem thông tin cá nhân
+    document.getElementById('menu-info').addEventListener('click', function () {
+        personalPage(myUserName);
+    });
+
+    // Bắt sự kiện cập nhật thông tin
+    document.getElementById('menu-update').addEventListener('click', function () {
+        window.location.href = "../Frontend-Chat/pages/update.html";
     });
 
     // Bắt sự kiện logout
@@ -147,6 +162,10 @@ function logout() {
     window.location.href = "../Frontend-Chat/pages/login.html";
 }
 
+function personalPage(username) {
+    window.location.href = `../Frontend-Chat/pages/info.html#${encodeURIComponent(username)}`;
+}
+
 async function getCurrentUser(accessToken) {
     try {
         const response = await fetch(apiUrls.User.GET_CURRENT_USER, {
@@ -160,6 +179,7 @@ async function getCurrentUser(accessToken) {
         if (response.ok) {
             const data = await response.json();
             myId = data.data.id;
+            myUserName = data.data.username;
         }
         else
             alert("Lỗi trong quá trình xử lý: " + response.status);
@@ -202,6 +222,12 @@ async function headerConversation(accessToken) {
             const avatarSettingName = document.querySelector('.menu-heading-name .menu-avatar-name');
             avatarName.textContent = data.data.fullName;
             avatarSettingName.textContent = data.data.fullName;
+
+            // Bấm vào full name ở home -> trang cá nhân
+            avatarName.addEventListener("click", function() {
+                personalPage(myUserName);
+
+            });
         }
         else
             alert("Lỗi trong quá trình xử lý: " + response.status);
