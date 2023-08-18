@@ -2,10 +2,7 @@ package com.example.backendchat.service.impl;
 
 import com.example.backendchat.constant.*;
 import com.example.backendchat.domain.dto.common.DataMailDto;
-import com.example.backendchat.domain.dto.request.ForgotPasswordRequestDto;
-import com.example.backendchat.domain.dto.request.LoginRequestDto;
-import com.example.backendchat.domain.dto.request.TokenRefreshRequestDto;
-import com.example.backendchat.domain.dto.request.UserCreateDto;
+import com.example.backendchat.domain.dto.request.*;
 import com.example.backendchat.domain.dto.response.CommonResponseDto;
 import com.example.backendchat.domain.dto.response.LoginResponseDto;
 import com.example.backendchat.domain.dto.response.TokenRefreshResponseDto;
@@ -52,7 +49,6 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final SendMailUtil sendMailUtil;
     @Override
     public LoginResponseDto login(LoginRequestDto request) {
         try {
@@ -62,8 +58,7 @@ public class AuthServiceImpl implements AuthService {
                         () -> new UnauthorizedException(ErrorMessage.Auth.ERR_INCORRECT_USERNAME));
                 authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
-            }
-            else {
+            } else {
                 authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             }
@@ -110,29 +105,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public CommonResponseDto forgotPassword(ForgotPasswordRequestDto requestDto) {
-         User user = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_USERNAME, new String[]{requestDto.getEmail()})
-        );
-        String newPassword = RandomString.generate(CommonConstant.RANDOM_PASSWORD_LENGTH);
-
-        Map<String, Object> props = new HashMap<>();
-        props.put("fullName", user.getFullName());
-        props.put("password", newPassword);
-        props.put("appName", CommonConstant.APP_NAME);
-
-        DataMailDto mail = new DataMailDto(user.getUsername(),
-                MessageConstant.SUBJECT_MAIL_RESET_PASSWORD, null, props);
-
-        try {
-            sendMailUtil.sendEmailWithHTML(mail, "reset-password.html");
-        } catch (Exception e) {
-            log.error("Send mail failed for {}", e.getMessage());
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
+    public CommonResponseDto createPassword(NewPasswordRequestDto newPasswordRequestDto) {
+        User user = userRepository.findUserByEmail(newPasswordRequestDto.getEmail()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_EMAIL, new String[]{newPasswordRequestDto.getEmail()}) );
+        user.setPassword(passwordEncoder.encode(newPasswordRequestDto.getPassword()));
         userRepository.save(user);
-        return new CommonResponseDto(true, MessageConstant.RESET_PASSWORD);
+        return new CommonResponseDto(true, MessageConstant.CREATE_NEW_PASSWORD_SUCCESSFULLY);
     }
 
 }
