@@ -8,8 +8,7 @@ public class UrlConstant {
         public static final String LOGIN = PRE_FIX + "/login";
         public static final String LOGOUT = PRE_FIX + "/logout";
         public static final String REGISTER = PRE_FIX + "/register";
-        public static final String RESET_PASSWORD = PRE_FIX + "/reset-password";
-
+        public static final String CREATE_PASSWORD = PRE_FIX + "/create-password";
         private Auth() {
         }
     }
@@ -43,4 +42,13 @@ public class UrlConstant {
         }
     }
 
+    public static class Email {
+        private static final String PRE_FIX = "/email";
+
+        public static final String SEND_VERIFICATION_FORGOT_PASSWORD = PRE_FIX +"/send-verify";
+        public static final String VERIFICATION_FORGOT_PASSWORD = PRE_FIX + "/verify";
+
+        private Email() {
+        }
+    }
 }

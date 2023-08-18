@@ -5,7 +5,7 @@ public class CommonConstant {
     public static final String SORT_TYPE_ASC = "ASC";
     public static final String SORT_TYPE_DESC = "DESC";
     public static final Integer PAGE_SIZE_DEFAULT = 10;
-    public static final Integer RANDOM_PASSWORD_LENGTH = 8;
+    public static final Integer RANDOM_VERIFICATION_C0DE_LENGTH = 8;
     public static final Integer ZERO_INT_VALUE = 0;
     public static final Integer ONE_INT_VALUE = 1;
     public static final Long ZERO_VALUE = 0L;
@@ -27,6 +27,8 @@ public class CommonConstant {
     public static final Long MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
     public static final Long MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
     public static final Integer NUM_OF_MESSAGES_PER_PAGE_DEFAULT = 30;
+    public static final Integer VERIFICATION_CODE_EXPIRATION_MINUTES = 30;
+
 
     public static class Event {
         //Client
