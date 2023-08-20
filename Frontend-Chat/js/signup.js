@@ -79,7 +79,7 @@ async function signup(fullname, username, password, confirmPassword, email) {
                         errorMessageString = `${errorMessage[field]}`;
                     });
                 }
-                toastr.error(errorMessageString, 'Thất bại!');
+                toastr.error(errorMessageString);
 
             }
         } catch (error) {
@@ -88,7 +88,7 @@ async function signup(fullname, username, password, confirmPassword, email) {
         }
     } else {
         const errorMessage = "Vui lòng nhập mật khẩu trùng nhau!";
-        toastr.error(errorMessage, 'Lỗi!');
+        toastr.error(errorMessage);
     }
 
     // Giữ nguyên giá trị các trường

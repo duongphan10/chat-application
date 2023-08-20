@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 else {
                     const errorMessage = data.data.message; // Access the "message" field                   
-                    toastr.error(errorMessage, 'Thất bại!');
+                    toastr.error(errorMessage);
                 }
             } else {
                 if (response.status == 401) {
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         errorMessageString = `${errorMessage[field]}`;
                     });
 
-                    toastr.error(errorMessageString, 'Lỗi');
+                    toastr.error(errorMessageString);
                 }
             }
         }

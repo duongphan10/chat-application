@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             errorMessageString = `${errorMessage[field]}`;
                         });
                     }
-                    toastr.error(errorMessageString, 'Cập nhật thất bại');
+                    toastr.error(errorMessageString);
                 }
             } catch (error) {
                 alert("Lỗi! Vui lòng thử lại sau");

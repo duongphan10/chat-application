@@ -231,10 +231,13 @@ async function headerConversation(accessToken) {
             avatarName.textContent = data.data.fullName;
             avatarSettingName.textContent = data.data.fullName;
 
-            // Bấm vào full name ở home -> trang cá nhân
-            avatarName.addEventListener("click", function() {
+            // Bấm vào full name and avatar ở home -> trang cá nhân
+            document.querySelector('.heading-avatar').addEventListener("click", function() {
                 personalPage(myUserName);
-
+            });
+            
+            document.querySelector('.heading-name').addEventListener("click", function() {
+                personalPage(myUserName);
             });
         }
         else
