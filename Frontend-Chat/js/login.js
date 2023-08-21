@@ -7,15 +7,19 @@ const apiUrls = {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    //Xử lý chuyển hướng từ signup
-    const messageSignup = localStorage.getItem("message-signup");
-    if (messageSignup) {
-        const messageContainer = document.getElementById("message-signup");
-        messageContainer.textContent = messageSignup;
-        localStorage.removeItem("message-signup");
-    }
+toastr.options = {
+    newestOnTop: true,           // Hiển thị thông báo mới nhất ở trên cùng
+    preventDuplicates: false,
+    positionClass: 'toast-top-center',
+    toastClass: 'toastr-custom-width',
+    showEasing: 'swing',         // Hiệu ứng hiển thị
+    hideEasing: 'linear',        // Hiệu ứng ẩn
+    showMethod: 'fadeIn',        // Phương thức hiển thị
+    hideMethod: 'fadeOut',        // Phương thức ẩn      
+    timeOut: '3000',             // Thời gian tự động ẩn thông báo (milliseconds)            
+};
 
+document.addEventListener("DOMContentLoaded", function () {
     // Xử lý khi đăng nhập
     const loginForm = document.getElementById("login-form");
     loginForm.addEventListener("submit", function (event) {
@@ -47,14 +51,16 @@ async function login(username, password) {
 
             // Save the access token in localStorage
             localStorage.setItem("accessToken", accessToken);
-
-            window.location.href = "../index.html"; // Redirect to the chat page after successful login
+            toastr.success("Đăng nhập thành công");
+            setTimeout( function() {                
+                window.location.href = "../index.html"; // Redirect to the chat page after successful login
+            }, 1000);
+            
         } else {
             // Handle login error (e.g., incorrect username/password)
-            const errorResponse = await response.json(); // Parse JSON response
-            const errorMessage = errorResponse.message; // Access the "message" field
-            const errorContainer = document.getElementById("error-message");
-            errorContainer.textContent = errorMessage;
+            const errorResponse = await response.json(); 
+            const errorMessage = errorResponse.message; 
+            toastr.error(errorMessage)
 
             // Giữ nguyên giá trị tài khoản và mật khẩu người dùng
             const loginForm = document.getElementById("login-form");
