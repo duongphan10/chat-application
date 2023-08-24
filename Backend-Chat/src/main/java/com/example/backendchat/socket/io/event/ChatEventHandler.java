@@ -15,9 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ChatEventHandler {
-
     private final SocketIOServer server;
-
     private final MessageService messageService;
 
     @OnEvent(CommonConstant.Event.CLIENT_SEND_MESSAGE)

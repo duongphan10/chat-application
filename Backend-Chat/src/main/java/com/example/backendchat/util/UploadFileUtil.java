@@ -22,8 +22,7 @@ public class UploadFileUtil {
     public String uploadFile(MultipartFile file) {
         try {
             String resourceType = getResourceType(file);
-            Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type",
-                    resourceType));
+            Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", resourceType));
             return result.get("secure_url").toString();
         } catch (IOException e) {
             throw new UploadFileException("Upload file failed!");
@@ -47,10 +46,12 @@ public class UploadFileUtil {
             Map<String, String> params = new HashMap<>();
             if (url.contains("/video/")) {
                 params.put("resource_type", "video");
-            } else {
-                if (url.contains("/image/")) {
-                    params.put("resource_type", "image");
-                }
+            } else if (url.contains("/image/")) {
+                params.put("resource_type", "image");
+            } else if (url.contains("/audio/")) {
+                params.put("resource_type", "audio");
+            } else if (url.contains("/raw/")) { // Assuming you have a "document" folder
+                params.put("resource_type", "raw"); // Use "raw" for documents
             }
             Map<?, ?> result = cloudinary.uploader().destroy(publicId, params);
             log.info(String.format("Destroy file public id %s %s", publicId, result.toString()));
@@ -66,6 +67,10 @@ public class UploadFileUtil {
                 return "image";
             } else if (contentType.startsWith("video/")) {
                 return "video";
+            } else if (contentType.startsWith("audio/")) {
+                return "audio";
+            } else if (contentType.startsWith("application/")) {
+                return "raw";
             } else {
                 return "auto";
             }

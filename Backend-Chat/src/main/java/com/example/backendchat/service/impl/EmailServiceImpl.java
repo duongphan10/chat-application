@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,7 @@ public class EmailServiceImpl implements EmailService {
     private final SendMailUtil sendMailUtil;
     private final CodeRepository codeRepository;
 
+//    @Async
     public CommonResponseDto sendVerificationForgotPassword(ForgotPasswordRequestDto requestDto) {
         User user = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow(
                 () -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_EMAIL, new String[]{requestDto.getEmail()})
@@ -67,7 +69,7 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             log.error("Send mail failed for {}", e.getMessage());
         }
-        return new CommonResponseDto(true, MessageConstant.VERIFY_FORGOT_PASSWORD);
+        return new CommonResponseDto(true, MessageConstant.VERIFY_FORGOT_PASSWORD + user.getEmail());
     }
 
     @Override

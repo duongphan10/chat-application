@@ -12,12 +12,12 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageResponseDto {
+public class FileAttachmentResponseDto {
     private String id;
-    private String message;
-    private String senderId;
-    private String receiverId;
-    private List<FileAttachmentResponseDto> fileAttachments;
+    private String filePath;
+    private String fileName;
+    private Long fileSize;
     private String createdDate;
     private String lastModifiedDate;
+    private String messageId;
 }

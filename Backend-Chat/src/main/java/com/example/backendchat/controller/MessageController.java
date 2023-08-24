@@ -15,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -29,9 +26,9 @@ public class MessageController {
 
     @Tag(name = "message-controller")
     @Operation(summary = "API create new message")
-    @PostMapping(value = UrlConstant.Message.SEND_MESSAGE_TO_OTHER)
+    @PostMapping(value = UrlConstant.Message.SEND_MESSAGE_TO_OTHER, consumes = "multipart/form-data")
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> sendMessageToOtherById(@Valid @RequestBody MessageRequestDto messageRequestDto,
+    public ResponseEntity<?> sendMessageToOtherById(@Valid @ModelAttribute MessageRequestDto messageRequestDto,
                                                     @Parameter(name = "user", hidden = true)
                                                     @CurrentUser UserPrincipal user) {
         return VsResponseUtil.success(messageService.sendMessage(user.getId(), messageRequestDto));
