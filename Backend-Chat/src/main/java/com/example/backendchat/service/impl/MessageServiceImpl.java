@@ -18,7 +18,6 @@ import com.example.backendchat.repository.MessageRepository;
 import com.example.backendchat.repository.UserRepository;
 import com.example.backendchat.service.FileAttachmentService;
 import com.example.backendchat.service.MessageService;
-import com.example.backendchat.util.DateTimeUtil;
 import com.example.backendchat.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,12 +26,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -60,14 +58,28 @@ public class MessageServiceImpl implements MessageService {
         message.setReceiver(receiver);
         messageRepository.save(message);
 
-        List<FileAttachment> fileAttachments = new ArrayList<>();
+        List<CompletableFuture<FileAttachment>> fileAttachmentFutures = new ArrayList<>();
         if (messageRequestDto.getFileAttachments() != null && !messageRequestDto.getFileAttachments().isEmpty()) {
             for (MultipartFile file : messageRequestDto.getFileAttachments()) {
-                fileAttachments.add(fileAttachmentService.create(message.getId(), file));
+                CompletableFuture<FileAttachment> fileAttachmentFuture = fileAttachmentService.create(message.getId(), file);
+                fileAttachmentFutures.add(fileAttachmentFuture);
             }
         }
-        message.setFileAttachments(fileAttachments);
-        messageRepository.save(message);
+
+        // Wait for all file attachment futures to complete
+        CompletableFuture<Void> allFileAttachmentFuture = CompletableFuture.allOf(
+                fileAttachmentFutures.toArray(new CompletableFuture[0])
+        );
+
+        allFileAttachmentFuture.thenRun(() -> {
+            List<FileAttachment> fileAttachments = fileAttachmentFutures.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+
+            // Set the file attachments and save the message again
+            message.setFileAttachments(fileAttachments);
+            messageRepository.save(message);
+        });
 
         MessageResponseDto messageResponseDto = messageMapper.messageToMessageResponseDto(message);
         //messageResponseDto.setCreatedDate(DateTimeUtil.toString(message.getCreatedDate()));

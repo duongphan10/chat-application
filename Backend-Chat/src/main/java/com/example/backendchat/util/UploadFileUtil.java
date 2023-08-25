@@ -67,10 +67,6 @@ public class UploadFileUtil {
                 return "image";
             } else if (contentType.startsWith("video/")) {
                 return "video";
-            } else if (contentType.startsWith("audio/")) {
-                return "audio";
-            } else if (contentType.startsWith("application/")) {
-                return "raw";
             } else {
                 return "auto";
             }

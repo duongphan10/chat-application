@@ -27,19 +27,19 @@ public class ListFileValidator implements ConstraintValidator<ValidListFile, Lis
         int videoFile = 0;
         for (MultipartFile file : multipartFiles) {
             String contentType = file.getContentType();
-//            if (contentType == null || !isSupportedContentType(contentType)) {
-//                constraintValidatorContext.disableDefaultConstraintViolation();
-//                constraintValidatorContext.buildConstraintViolationWithTemplate(fileTypeNotAllowedMessage)
-//                        .addConstraintViolation();
-//                return false;
-//            }
-//            if ((contentType.startsWith("image/") && file.getSize() > CommonConstant.MAX_IMAGE_SIZE_BYTES) ||
-//                    file.getSize() > CommonConstant.MAX_VIDEO_SIZE_BYTES) {
-//                constraintValidatorContext.disableDefaultConstraintViolation();
-//                constraintValidatorContext.buildConstraintViolationWithTemplate(fileSizeExceededMessage)
-//                        .addConstraintViolation();
-//                return false;
-//            }
+            if (contentType == null || !isSupportedContentType(contentType)) {
+                constraintValidatorContext.disableDefaultConstraintViolation();
+                constraintValidatorContext.buildConstraintViolationWithTemplate(fileTypeNotAllowedMessage)
+                        .addConstraintViolation();
+                return false;
+            }
+            if ((contentType.startsWith("image/") && file.getSize() > CommonConstant.MAX_IMAGE_SIZE_BYTES) ||
+                    file.getSize() > CommonConstant.MAX_VIDEO_SIZE_BYTES) {
+                constraintValidatorContext.disableDefaultConstraintViolation();
+                constraintValidatorContext.buildConstraintViolationWithTemplate(fileSizeExceededMessage)
+                        .addConstraintViolation();
+                return false;
+            }
             if (contentType.startsWith("image/"))
                 imageFile++;
             else
@@ -53,12 +53,12 @@ public class ListFileValidator implements ConstraintValidator<ValidListFile, Lis
             return CommonConstant.CONTENT_TYPE_IMAGE.contains(contentType.substring("image/".length()));
         } else if (contentType.startsWith("video/")) {
             return CommonConstant.CONTENT_TYPE_VIDEO.contains(contentType.substring("video/".length()));
-        } else if (contentType.startsWith("audio/")) {
-            return CommonConstant.CONTENT_TYPE_AUDIO.contains(contentType.substring("audio/".length()));
-        } else if (contentType.startsWith("application/")) {
-            return CommonConstant.CONTENT_TYPE_DOCUMENT.contains(contentType.substring("application/".length()));
-        } else if (contentType.startsWith("text/")) {
-            return CommonConstant.CONTENT_TYPE_DOCUMENT_TEXT.contains(contentType.substring("text/".length()));
+//        } else if (contentType.startsWith("audio/")) {
+//            return CommonConstant.CONTENT_TYPE_AUDIO.contains(contentType.substring("audio/".length()));
+//        } else if (contentType.startsWith("application/")) {
+//            return CommonConstant.CONTENT_TYPE_DOCUMENT.contains(contentType.substring("application/".length()));
+//        } else if (contentType.startsWith("text/")) {
+//            return CommonConstant.CONTENT_TYPE_DOCUMENT_TEXT.contains(contentType.substring("text/".length()));
         }
         return false;
     }

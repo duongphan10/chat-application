@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.concurrent.CompletableFuture;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -19,16 +22,18 @@ public class FileAttachmentServiceImpl implements FileAttachmentService {
     private final MessageRepository messageRepository;
     private final FileAttachmentRepository fileAttachmentRepository;
     private final UploadFileUtil uploadFileUtil;
+
     @Override
-    public FileAttachment create(String messageId, MultipartFile file) {
+    public CompletableFuture<FileAttachment> create(String messageId, MultipartFile file) {
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{messageId}));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Message.ERR_NOT_FOUND_ID, new String[]{messageId}));
         FileAttachment fileAttachment = new FileAttachment();
         fileAttachment.setFileName(file.getOriginalFilename());
         fileAttachment.setFileSize(file.getSize());
         fileAttachment.setFilePath(uploadFileUtil.uploadFile(file));
         fileAttachment.setMessage(message);
-        return fileAttachmentRepository.save(fileAttachment);
+        fileAttachmentRepository.save(fileAttachment);
+        return CompletableFuture.completedFuture(fileAttachment);
     }
 
     @Override
