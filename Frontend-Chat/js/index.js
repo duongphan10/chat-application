@@ -22,6 +22,7 @@ const apiUrls = {
     // Message
     Message: {
         GET_MESSAGE_WITH_OTHER_ID: API_BASE_URL + "/message/me",
+        SEND_MESSAGE_TO_OTHER: API_BASE_URL + "/message",
     },
 }
 
@@ -34,12 +35,13 @@ var myId;
 var myUserName;
 var currentPageMessage = 0;
 var selectedUserId = null;
+var selectedDiv = null;
 var tryError = false;
 
 getCurrentUser(accessToken);
 loadConversations(accessToken);
 
-document.addEventListener('DOMContentLoaded', function () {    
+document.addEventListener('DOMContentLoaded', function () {
     socket.on('server_send_message', (message) => {
         if (myId == message.senderId || (myId == message.receiverId && selectedUserId == message.senderId)) {
             currentPageMessage = 1;
@@ -47,8 +49,9 @@ document.addEventListener('DOMContentLoaded', function () {
             bodyConversation(accessToken, 1);
         }
         else {
-            if (myId == message.receiverId)
+            if (myId == message.receiverId) {
                 bodyConversation(accessToken, 1);
+            }
         }
     });
 
@@ -108,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
     searchButtonComposeBox.addEventListener("click", function () {
         if (searchInputComposeBox.value.trim() !== '')
             bodySearchUser(accessToken, 1);
-    });    
+    });
 
     // Bắt sự kiện xem thông tin cá nhân
     document.getElementById('menu-info').addEventListener('click', function () {
@@ -232,11 +235,11 @@ async function headerConversation(accessToken) {
             avatarSettingName.textContent = data.data.fullName;
 
             // Bấm vào full name and avatar ở home -> trang cá nhân
-            document.querySelector('.heading-avatar').addEventListener("click", function() {
+            document.querySelector('.heading-avatar').addEventListener("click", function () {
                 personalPage(myUserName);
             });
-            
-            document.querySelector('.heading-name').addEventListener("click", function() {
+
+            document.querySelector('.heading-name').addEventListener("click", function () {
                 personalPage(myUserName);
             });
         }
@@ -327,7 +330,7 @@ async function bodyConversation(accessToken, type) {
                                     ${user.fullName}
                                 </span>
                                 <span class="message-meta">
-                                    ${message}
+                                    
                                 </span>
                             </div>
                             <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
@@ -339,9 +342,19 @@ async function bodyConversation(accessToken, type) {
                     </div>                  
                 `;
                 userDiv.innerHTML = userContent;
+                userDiv.querySelector('.message-meta').textContent = message;
+
                 userListContainer.appendChild(userDiv);
                 // Xử lý sự kiện khi bấm vào tên người dùng
-                userDiv.addEventListener("click", () => handlerConversation(user.id, accessToken));
+                // userDiv.addEventListener("click", () => handlerConversation(user.id, accessToken));
+                userDiv.addEventListener("click", function () {
+                    if (selectedDiv) {
+                        selectedDiv.style.background = "";
+                    }
+                    selectedDiv = userDiv;
+                    userDiv.style.background = "#eeeeee";
+                    handlerConversation(user.id, accessToken);
+                });
             }
         }
         else
@@ -421,7 +434,7 @@ async function bodySearchUser(accessToken, type) {
     } catch (error) {
         // Handle any network or server errors
         alert("Lỗi! Vui lòng thử lại sau");
-        
+
     }
 }
 
@@ -482,7 +495,6 @@ async function handlerConversation(userOtherId, accessToken) {
             const totalReplyMainPadding = parseFloat(replyMainStyle.paddingTop) + parseFloat(replyMainStyle.paddingBottom);
 
             const maxHeight = parseInt(getComputedStyle(textarea).maxHeight);
-            const colorSendIcon = window.getComputedStyle(sendIcon).color;
 
             // Xử lý sự kiện nhập nội dung tin nhắn
             textarea.addEventListener('input', function () {
@@ -490,7 +502,7 @@ async function handlerConversation(userOtherId, accessToken) {
                 if (textarea.value.trim() !== '')
                     sendIcon.style.color = '#0084ff';
                 else
-                    sendIcon.style.color = colorSendIcon;
+                    sendIcon.style.color = "";
 
                 const scrollHeight = textarea.scrollHeight;
                 var slectedHeight = null;
@@ -528,12 +540,12 @@ async function handlerConversation(userOtherId, accessToken) {
                 sendMessage()
             });
 
-            function sendMessage() {
+            async function sendMessage() {
                 const message = textarea.value.trim();
                 if (message !== '') {
                     // Xóa nội dung trong textarea sau khi gửi tin nhắn
                     textarea.value = '';
-                    sendIcon.style.color = colorSendIcon;
+                    sendIcon.style.color = "";
                     // Đặt lại kích thước div
                     rowReply.style.maxHeight = (textAreaHeight + totalReplyMainPadding + totalPeplyPadding) + 'px';
                     replyMain.style.height = (textAreaHeight + totalReplyMainPadding) + 'px';
@@ -541,11 +553,38 @@ async function handlerConversation(userOtherId, accessToken) {
 
                     const maxMessageHeight = conversationHeight - headerHeight - rowReply.clientHeight;
                     rowMessage.style.maxHeight = maxMessageHeight + 'px';
-                    // Gửi tin nhắn
-                    // alert(userOtherId + " " + selectedUserId);
-                    socket.emit("client_send_message", { message: message, receiverId: selectedUserId });
+
+                    //Lấy file
+                    const fileInput = document.getElementById('fileInput');
+                    const fileAttachments = fileInput.files;
+
+                    // Gửi tin nhắn                    
+                    // socket.emit("client_send_message", {
+                    //     message: message,
+                    //     receiverId: selectedUserId,
+                    //     // fileAttachments: fileAttachments
+                    // });
+
+                    const formData = new FormData();
+                    formData.append('message', message);
+                    formData.append('receiverId', selectedUserId);
+                    for (const file of fileAttachments) {
+                        formData.append('fileAttachments', file);
+                    }
+                    // formData.append('fileAttachments', fileAttachments);
+
+                    const response = await fetch(apiUrls.Message.SEND_MESSAGE_TO_OTHER, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${accessToken}`,
+                        },
+                        body: formData,
+                    });
+                    fileInput.value = '';
+
                 }
             }
+
         }
         else if (response.status == 401) {
             checkToken(accessToken);
@@ -629,42 +668,108 @@ async function bodyMessage(userOtherId, accessToken, pageNum) {
 
                 const messageDiv = document.createElement("div");
                 messageDiv.classList.add("row", "message-body");
-                if (message.senderId != userOtherId) {
-                    const messageContent = `                  
-                        <div class="col-sm-12 message-main-sender">
-                            <div class="sender">
-                                <div class="message-text" title="${formattedTime}">
-                                    ${message.message}
-                                </div>
-                                <span class="message-time pull-right">
-                                    ${formattedTime}
-                                </span>
-                            </div>
-                        </div>                
-                    `;
+
+                if (message.message) {
+                    var messageContent = '';
+                    if (message.senderId != userOtherId) {
+                        messageContent = `                  
+                                <div class="col-sm-12 message-main-sender">
+                                    <div class="sender">
+                                        <div class="message-text" title="${formattedTime}">
+                                            <!-- ${message.message} -->
+                                        </div>
+                                        <span class="message-time pull-right">
+                                            ${formattedTime}
+                                        </span>
+                                    </div>
+                                </div>                
+                            `;
+                    } else {
+                        messageContent = `                  
+                                <div class="col-sm-12 message-main-receiver">
+                                    <div class="receiver">
+                                        <div class="message-text" title="${formattedTime}">
+                                            <!-- ${message.message} -->
+                                        </div>
+                                        <span class="message-time pull-right">
+                                            ${formattedTime}
+                                        </span>
+                                    </div>
+                                </div>               
+                            `;
+                    }
+
                     messageDiv.innerHTML = messageContent;
-                    //messageContainer.appendChild(messageDiv);
-                    // Thêm div mới vào đầu của messageContainer
-                    messageContainer.insertBefore(messageDiv, messageContainer.firstChild);
+                    messageDiv.querySelector('.message-text').textContent = message.message;
                 }
-                else {
-                    const messageContent = `                  
-                        <div class="col-sm-12 message-main-receiver">
-                            <div class="receiver">
-                                <div class="message-text">
-                                    ${message.message}
-                                </div>
-                                <span class="message-time pull-right">
-                                    ${formattedTime}
-                                </span>
-                            </div>
-                        </div>               
-                    `;
-                    messageDiv.innerHTML = messageContent;
-                    //messageContainer.appendChild(messageDiv);
-                    // Thêm div mới vào đầu của messageContainer
-                    messageContainer.insertBefore(messageDiv, messageContainer.firstChild);
+                if (message.fileAttachments) {
+                    const fileAttachments = message.fileAttachments;
+                    fileAttachments.forEach(file => {
+                        var messageMainDiv = '';
+                        var fileClass = '';
+                        if (message.senderId != userOtherId) {
+                            if (file.filePath.toString().includes("/image/upload/")) {
+                                messageMainDiv = `
+                                        <div class="col-sm-12 message-main-sender">
+                                            <a href="${file.filePath}" data-lightbox="${file.id}">
+                                                <img class="image-attachment-sender" src="${file.filePath}" alt="" title="${formattedTime}">
+                                            </a>
+                                        </div>                                
+                                    `;
+                                fileClass = ".image-attachment-sender";
+                            } else {
+                                messageMainDiv = `
+                                        <div class="col-sm-12 message-main-sender">                                            
+                                            <video class="video-attachment-sender" controls>
+                                                <source src="${file.filePath}" type="video/mp4">
+                                            </video>   
+                                            
+                                            <span class="message-time pull-right">
+                                                ${formattedTime}
+                                            </span>                                            
+                                        </div>                                
+                                    `;
+                                fileClass = ".video-attachment-sender";
+                            }
+                        }
+                        else {
+                            if (file.filePath.toString().includes("/image/upload/")) {
+                                messageMainDiv = `
+                                        <div class="col-sm-12 message-main-receiver">                                   
+                                            <img class="image-attachment-receiver" src="${file.filePath}" alt="" title="${formattedTime}">                              
+                                        </div>                                
+                                    `;
+                                fileClass = ".image-attachment-receiver";
+                            } else {
+                                messageMainDiv = `
+                                        <div class="col-sm-12 message-main-receiver">                                            
+                                            <video class="video-attachment-receiver" controls>
+                                                <source src="${file.filePath}" type="video/mp4">
+                                            </video>
+
+                                            <span class="message-time pull-right">
+                                                ${formattedTime}
+                                            </span>                                         
+                                        </div>                                
+                                    `;
+                                fileClass = ".video-attachment-receiver";
+                            }
+                        }
+                        messageDiv.innerHTML += messageMainDiv;
+
+                        const fileAttach = messageDiv.querySelector(fileClass);
+                        fileAttach.addEventListener("load", () => {
+                            // Tất cả hình ảnh đã tải xong, thực hiện cuộn xuống cuối
+                            if (pageNum == 1) {
+                                messageContainer.scrollTop = messageContainer.scrollHeight;
+                            }
+                        });
+                    });
                 }
+
+                //messageContainer.appendChild(messageDiv);
+                // Thêm div mới vào đầu của messageContainer
+                messageContainer.insertBefore(messageDiv, messageContainer.firstChild);
             });
             // Cuộn xuống dưới cùng nếu lần đầu hiện
             if (pageNum == 1) {
@@ -690,13 +795,16 @@ async function bodyMessage(userOtherId, accessToken, pageNum) {
 // Hiển thị phần reply
 async function replyMessage() {
     const conversationContainer = document.getElementById("conversation-container");
-    const replyContent = `                                      
-        <div class="col-sm-1 col-xs-1 reply-emojis" title="Chọn biểu tượng cảm xúc">
-            <i class="fa fa-smile-o fa-2x"></i>
-        </div>
-
-        <div class="col-sm-1 col-xs-1 reply-images" title="Đính kèm file">
-            <i class="fa fa-image fa-2x" aria-hidden="true"></i>
+    const replyContent = ` 
+        <!--                                
+        <div id="sendingNotification" class="sending-notification">
+            <i class="fa fa-spinner fa-spin"></i> Đang gửi tin nhắn... 
+        </div> -->
+        <div class="col-sm-1 col-xs-1 reply-files" title="Đính kèm file">
+            <label for="fileInput">
+                <i class="fa fa-image fa-2x" aria-hidden="true"></i>
+            </label>
+            <input type="file" id="fileInput" style="display: none;" multiple>
         </div>
 
         <div class="col-sm-1 col-xs-1 reply-recording" title="Gửi clip âm thanh">
@@ -704,7 +812,11 @@ async function replyMessage() {
         </div>
 
         <div class="col-sm-9 col-xs-9 reply-main">
-            <textarea class="form-control" wrap="soft" id="comment" placeholder="Nhập tin nhắn..." required ></textarea>
+            <textarea class="form-control" wrap="soft" id="comment" placeholder="Nhập tin nhắn..." required ></textarea>            
+        </div>
+
+        <div class="col-sm-1 col-xs-1 reply-emojis" title="Chọn biểu tượng cảm xúc">
+            <i class="fa fa-smile-o fa-2x"></i>
         </div>
         
         <div class="col-sm-1 col-xs-1 reply-send" title="Gửi">

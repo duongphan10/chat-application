@@ -135,6 +135,7 @@ async function senVerification(email) {
             changeContainer.style.display = "none";
         }
     } catch (error) {
+        console.log(error);
         // Handle any network or server errors
         alert("Lỗi! Vui lòng thử lại sau");
     }
