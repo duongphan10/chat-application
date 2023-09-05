@@ -13,11 +13,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Slf4j
 @RequiredArgsConstructor
 @EnableConfigurationProperties({AdminInfoProperties.class})
+@EnableAsync
 @SpringBootApplication
 public class BackendChatApplication {
 

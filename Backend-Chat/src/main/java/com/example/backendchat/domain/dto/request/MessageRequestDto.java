@@ -17,7 +17,6 @@ import java.util.List;
 @Setter
 @Getter
 public class MessageRequestDto extends DateAuditingDto {
-    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     private String message;
     @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     private String receiverId;
