@@ -302,11 +302,33 @@ async function bodyConversation(accessToken, type) {
                 const messageListData = data1.data.items;
                 var message = "";
                 const timeLastMessage = formatTime(new Date(messageListData[0].createdDate), 1);
-                if (messageListData[0].sender_id == user.id) {
-                    message = messageListData[0].message;
+                if (messageListData[0].message != null) {
+                    if (messageListData[0].sender_id == user.id) {
+                        message = messageListData[0].message;
+                    }
+                    else {
+                        message = "Bạn: " + messageListData[0].message;
+                    }
                 }
                 else {
-                    message = "Bạn: " + messageListData[0].message;
+                    // Lấy item cuối cùng trong mảng "fileAttachments"
+                    const lastFileAttachment = messageListData[0].fileAttachments[messageListData[0].fileAttachments.length - 1];
+                    if (lastFileAttachment.filePath.toString().includes("/image/upload/")) {
+                        if (messageListData[0].sender_id == user.id) {
+                            message = "Đã gửi 1 hình ảnh";
+                        }
+                        else {
+                            message = "Bạn đã gửi 1 hình ảnh";
+                        }
+                    }
+                    else {
+                        if (messageListData[0].sender_id == user.id) {
+                            message = "Đã gửi 1 video";
+                        }
+                        else {
+                            message = "Bạn đã gửi 1 video";
+                        }
+                    }
                 }
 
                 // Xử lý nếu avatar null
@@ -461,6 +483,15 @@ async function handlerConversation(userOtherId, accessToken) {
             // Hiển thị reply
             replyMessage();
 
+            // Xử lý hearder Message
+            document.querySelector('#header-conversation .heading-avatar').addEventListener('click', function () {
+                personalPage(data.data.username);
+            });
+            document.querySelector('#header-conversation .heading-name').addEventListener('click', function () {
+                personalPage(data.data.username);
+            });
+
+
             // Xử lý cuộn trang để xem tin nhắn cũ
             const messageContainer = document.getElementById("conversation");
             messageContainer.addEventListener("scroll", function () {
@@ -533,16 +564,32 @@ async function handlerConversation(userOtherId, accessToken) {
             textarea.addEventListener('keydown', function (event) {
                 if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();
-                    sendMessage();
+                    if (textarea.value.trim() != '') {
+                        sendMessage(1);
+                    }
                 }
             });
             sendButton.addEventListener('click', function () {
-                sendMessage()
+                if (textarea.value.trim() != '') {
+                    sendMessage(1);
+                }
             });
 
-            async function sendMessage() {
-                const message = textarea.value.trim();
-                if (message !== '') {
+            //Gửi file
+            // Lấy tham chiếu đến phần tử input file
+            const fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', function () {
+                if (fileInput.files != null) {
+                    sendMessage(2);
+                }
+            });
+
+            async function sendMessage(type) {
+                const formData = new FormData();
+                formData.append('receiverId', selectedUserId);
+                if (type == 1) {
+                    const message = textarea.value.trim();
+
                     // Xóa nội dung trong textarea sau khi gửi tin nhắn
                     textarea.value = '';
                     sendIcon.style.color = "";
@@ -554,10 +601,6 @@ async function handlerConversation(userOtherId, accessToken) {
                     const maxMessageHeight = conversationHeight - headerHeight - rowReply.clientHeight;
                     rowMessage.style.maxHeight = maxMessageHeight + 'px';
 
-                    //Lấy file
-                    const fileInput = document.getElementById('fileInput');
-                    const fileAttachments = fileInput.files;
-
                     // Gửi tin nhắn                    
                     // socket.emit("client_send_message", {
                     //     message: message,
@@ -565,26 +608,29 @@ async function handlerConversation(userOtherId, accessToken) {
                     //     // fileAttachments: fileAttachments
                     // });
 
-                    const formData = new FormData();
+
                     formData.append('message', message);
-                    formData.append('receiverId', selectedUserId);
-                    for (const file of fileAttachments) {
-                        formData.append('fileAttachments', file);
-                    }
-                    // formData.append('fileAttachments', fileAttachments);
-
-                    const response = await fetch(apiUrls.Message.SEND_MESSAGE_TO_OTHER, {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${accessToken}`,
-                        },
-                        body: formData,
-                    });
-                    fileInput.value = '';
-
                 }
-            }
+                else {
+                    if (type == 2) {
 
+                        //Lấy file
+                        const fileAttachments = fileInput.files;
+                        for (const file of fileAttachments) {
+                            formData.append('fileAttachments', file);
+                        }
+                        fileInput.value = '';
+                    }
+                }
+                
+                await fetch(apiUrls.Message.SEND_MESSAGE_TO_OTHER, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${accessToken}`,
+                    },
+                    body: formData,
+                });
+            }
         }
         else if (response.status == 401) {
             checkToken(accessToken);
@@ -639,6 +685,7 @@ async function headerMessage(data) {
     `;
     // Thêm html vào conversationContainer
     headerContainer.innerHTML = headerDiv;
+
 }
 
 // Xử lý hiện page message
@@ -696,7 +743,7 @@ async function bodyMessage(userOtherId, accessToken, pageNum) {
                                         </span>
                                     </div>
                                 </div>               
-                            `;
+                        `;
                     }
 
                     messageDiv.innerHTML = messageContent;
@@ -735,8 +782,10 @@ async function bodyMessage(userOtherId, accessToken, pageNum) {
                         else {
                             if (file.filePath.toString().includes("/image/upload/")) {
                                 messageMainDiv = `
-                                        <div class="col-sm-12 message-main-receiver">                                   
-                                            <img class="image-attachment-receiver" src="${file.filePath}" alt="" title="${formattedTime}">                              
+                                        <div class="col-sm-12 message-main-receiver">  
+                                            <a href="${file.filePath}" data-lightbox="${file.id}">                                 
+                                                <img class="image-attachment-receiver" src="${file.filePath}" alt="" title="${formattedTime}">                              
+                                            </a>
                                         </div>                                
                                     `;
                                 fileClass = ".image-attachment-receiver";
@@ -757,8 +806,8 @@ async function bodyMessage(userOtherId, accessToken, pageNum) {
                         }
                         messageDiv.innerHTML += messageMainDiv;
 
-                        const fileAttach = messageDiv.querySelector(fileClass);
-                        fileAttach.addEventListener("load", () => {
+                        const fileElements = messageDiv.querySelectorAll(fileClass);
+                        fileElements[fileElements.length - 1].addEventListener("load", () => {
                             // Tất cả hình ảnh đã tải xong, thực hiện cuộn xuống cuối
                             if (pageNum == 1) {
                                 messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -796,10 +845,6 @@ async function bodyMessage(userOtherId, accessToken, pageNum) {
 async function replyMessage() {
     const conversationContainer = document.getElementById("conversation-container");
     const replyContent = ` 
-        <!--                                
-        <div id="sendingNotification" class="sending-notification">
-            <i class="fa fa-spinner fa-spin"></i> Đang gửi tin nhắn... 
-        </div> -->
         <div class="col-sm-1 col-xs-1 reply-files" title="Đính kèm file">
             <label for="fileInput">
                 <i class="fa fa-image fa-2x" aria-hidden="true"></i>
